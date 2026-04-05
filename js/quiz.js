@@ -5,7 +5,7 @@
 'use strict';
 
 /* ── Replace with your API Gateway endpoint ── */
-const API_URL = 'YOUR_API_GATEWAY_URL_HERE';
+const API_URL = 'https://9mnh8cystf.execute-api.us-east-2.amazonaws.com/submit';
 
 /* ── State ── */
 let currentQ      = 0;
