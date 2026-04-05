@@ -4,7 +4,101 @@
 
 'use strict';
 
-/* ── Validation helper ── */
+const CLIENT_ID = '638185409427-8tfkve11ffcp5e35du4m6bjhjobv6ftt.apps.googleusercontent.com';
+
+/* ─────────────────────────────────────────────
+   GOOGLE SIGN-IN — Initialise on page load
+   The GSI script loads async, so we wait for
+   it using the window.onload + polling trick.
+───────────────────────────────────────────── */
+function initGoogleSignIn() {
+  if (!window.google || !window.google.accounts) {
+    // GSI script not ready yet — retry in 100ms
+    setTimeout(initGoogleSignIn, 100);
+    return;
+  }
+
+  window.google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback:  handleGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: true,
+  });
+}
+
+// Start polling as soon as DOM is ready
+document.addEventListener('DOMContentLoaded', initGoogleSignIn);
+
+/* ─────────────────────────────────────────────
+   BUTTON CLICK — Sign in with Google
+   Uses renderButton so the popup is tied to the
+   real user gesture (required by browsers).
+───────────────────────────────────────────── */
+function triggerGoogleSignIn() {
+  const btn = document.getElementById('google-btn-container');
+
+  if (!window.google || !window.google.accounts) {
+    showGoogleError('Google Sign-In is still loading. Please wait a moment and try again.');
+    return;
+  }
+
+  // Render a real Google button inside a hidden container then click it
+  // This satisfies browser popup-blocker rules (must be a real user gesture)
+  window.google.accounts.id.renderButton(btn, {
+    type:  'standard',
+    theme: 'outline',
+    size:  'large',
+  });
+
+  // Small delay to let the button render, then programmatically click it
+  setTimeout(() => {
+    const rendered = btn.querySelector('div[role="button"]');
+    if (rendered) {
+      rendered.click();
+    } else {
+      // Fallback — show One Tap prompt
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          showGoogleError(
+            'Google Sign-In popup was blocked.\n\n' +
+            'Please allow popups for this site, or use the manual form below.'
+          );
+        }
+      });
+    }
+  }, 300);
+}
+
+/* ─────────────────────────────────────────────
+   CALLBACK — Runs after Google returns a token
+───────────────────────────────────────────── */
+function handleGoogleCredential(response) {
+  try {
+    // JWT is three base64 parts: header.payload.signature
+    // Add padding so atob() works correctly
+    const base64 = response.credential.split('.')[1]
+                     .replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+
+    sessionStorage.setItem('qs_user', JSON.stringify({
+      name:      payload.name    || payload.given_name || 'Google User',
+      email:     payload.email   || '',
+      phone:     'via Google',
+      picture:   payload.picture || '',
+      startTime: Date.now()
+    }));
+
+    window.location.href = 'quiz.html';
+
+  } catch (e) {
+    console.error('Google credential decode error:', e);
+    showGoogleError('Sign-In failed. Please try the manual form below.');
+  }
+}
+
+/* ─────────────────────────────────────────────
+   MANUAL FORM — Validate and launch quiz
+───────────────────────────────────────────── */
 function validate(id, errId, testFn) {
   const el  = document.getElementById(id);
   const err = document.getElementById(errId);
@@ -14,7 +108,6 @@ function validate(id, errId, testFn) {
   return ok;
 }
 
-/* ── Launch quiz (manual form) ── */
 function startQuiz() {
   const nameOk  = validate('inp-name',  'err-name',  v => v.length >= 2);
   const emailOk = validate('inp-email', 'err-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
@@ -31,46 +124,15 @@ function startQuiz() {
   window.location.href = 'quiz.html';
 }
 
-/* ── Google Sign-In handler ──
-   Replace YOUR_GOOGLE_CLIENT_ID with your actual OAuth 2.0 client ID.
-   Full setup: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
-── */
-function handleGoogleCredential(response) {
-  try {
-    // Decode the JWT payload (header.payload.signature)
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-
-    sessionStorage.setItem('qs_user', JSON.stringify({
-      name:      payload.name  || 'Google User',
-      email:     payload.email || '',
-      phone:     'via Google',
-      picture:   payload.picture || '',
-      startTime: Date.now()
-    }));
-
-    window.location.href = 'quiz.html';
-  } catch (e) {
-    console.error('Google Sign-In decode error:', e);
-    alert('Google Sign-In failed. Please try the manual form.');
-  }
-}
-
-/* ── Fallback: manual "Sign in with Google" button click ──
-   (Triggers Google One Tap prompt when GSI library is loaded)
-── */
-function triggerGoogleSignIn() {
-  if (window.google && window.google.accounts) {
-    window.google.accounts.id.prompt();
-  } else {
-    // Library not loaded (no Client ID set) — show friendly notice
-    alert(
-      'Google Sign-In is not configured yet.\n\n' +
-      'Steps to enable it:\n' +
-      '1. Go to https://console.cloud.google.com\n' +
-      '2. Create an OAuth 2.0 Client ID\n' +
-      '3. Replace YOUR_GOOGLE_CLIENT_ID in index.html\n\n' +
-      'For now, please use the manual form below.'
-    );
+/* ─────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────── */
+function showGoogleError(msg) {
+  const el = document.getElementById('google-error');
+  if (el) {
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
   }
 }
 
@@ -86,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ── Enter key → submit form ── */
+/* ── Enter key → submit manual form ── */
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') startQuiz();
 });
