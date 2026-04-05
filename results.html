@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuizStack 2026 — Your Results</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/results.css">
+</head>
+<body>
+
+<!-- Confetti canvas (rendered above everything) -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Animated background -->
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="page-wrap">
+
+  <!-- ── Header ── -->
+  <div class="results-header">
+    <div class="results-logo">⚡ QUIZSTACK 2026 — RESULTS</div>
+    <div class="results-title">CHALLENGE COMPLETE</div>
+  </div>
+
+  <!-- ── Score Ring ── -->
+  <div class="score-hero">
+    <div class="score-ring-wrap">
+      <svg class="score-ring-svg" width="180" height="180" viewBox="0 0 180 180"
+           role="img" aria-label="Score ring">
+        <circle class="score-ring-bg" cx="90" cy="90" r="80"/>
+        <circle class="score-ring-fill" id="score-ring" cx="90" cy="90" r="80"/>
+      </svg>
+      <div class="score-center">
+        <div class="score-num" id="score-display">0</div>
+        <div class="score-denom">/ 50</div>
+      </div>
+    </div>
+    <div class="grade-badge" id="grade-badge">-- --</div>
+    <div class="score-subtext" id="score-subtext"></div>
+  </div>
+
+  <!-- ── Stats Row ── -->
+  <div class="stats-row" id="stats-row"></div>
+
+  <!-- ── User Card ── -->
+  <div class="user-card" id="user-card"></div>
+
+  <!-- ── Tabs ── -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('overview')">📊 Overview</button>
+      <button class="tab-btn"        onclick="showTab('review')">🔍 Review Answers</button>
+    </div>
+  </div>
+
+  <!-- ── Tab Content ── -->
+  <div id="tab-overview"></div>
+  <div id="tab-review" style="display:none;"></div>
+
+  <!-- ── Action Buttons ── -->
+  <div class="action-row">
+    <button class="btn-action btn-home"  onclick="window.location.href='index.html'">🏠 Back to Home</button>
+    <button class="btn-action btn-retry" onclick="retryQuiz()">🔄 Retry Challenge</button>
+  </div>
+
+</div>
+
+<!-- Question bank (needed for category breakdown) + page logic -->
+<script src="js/questions.js"></script>
+<script src="js/results.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+/* ============================================================
+   QuizStack 2026 — CSS Variables & Base Styles
+   ============================================================ */
+
+:root {
+  --bg:        #020818;
+  --bg2:       #080f2a;
+  --card:      #0b1535;
+  --card2:     #0d1a40;
+  --gold:      #f5a623;
+  --gold2:     #ffd166;
+  --cyan:      #00d4ff;
+  --green:     #00e676;
+  --red:       #ff4757;
+  --orange:    #ff6b35;
+  --purple:    #7c3aed;
+  --text:      #e8ecf4;
+  --muted:     #8892b0;
+  --border:    #1e2a50;
+  --glow-gold: rgba(245,166,35,0.25);
+  --glow-cyan: rgba(0,212,255,0.2);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { height: 100%; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Animated Grid Background ── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridShift 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gridShift { to { background-position: 40px 40px; } }
+
+/* ── Floating Orbs ── */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb1 { width:400px; height:400px; background:rgba(245,166,35,0.08); top:-100px; right:-100px; animation-delay:0s; }
+.orb2 { width:300px; height:300px; background:rgba(0,212,255,0.07);  bottom:-80px; left:-80px;  animation-delay:3s; }
+.orb3 { width:200px; height:200px; background:rgba(0,230,118,0.05); top:50%; left:50%; animation-delay:5s; }
+
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0); }
+  50%      { transform: translate(20px,-20px); }
+}
+
+/* ── Scan-line overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+}
+
+/* ── Keyframes (shared) ── */
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity:0; transform:scale(0.85); }
+  to   { opacity:1; transform:scale(1); }
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%     { opacity:0.4; transform:scale(0.8); }
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes timerPulse {
+  0%,100% { opacity:1; }
+  50%     { opacity:0.5; }
+}
