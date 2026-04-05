@@ -58,31 +58,15 @@
     </div>
 
     <!-- ── Sign in with Google ── -->
-    <!--
-      Option A: Google's pre-styled button (recommended).
-      Renders automatically when GSI library loads.
-    -->
+    <!-- GSI hidden config — handles the callback when Google returns a credential -->
     <div id="g_id_onload"
          data-client_id="638185409427-8tfkve11ffcp5e35du4m6bjhjobv6ftt.apps.googleusercontent.com"
          data-callback="handleGoogleCredential"
          data-auto_prompt="false">
     </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large"
-         data-theme="filled_black"
-         data-text="signin_with"
-         data-shape="rectangular"
-         data-logo_alignment="left"
-         style="display:flex;justify-content:center;margin-bottom:2px;">
-    </div>
 
-    <!--
-      Option B: Custom-styled fallback button (always visible).
-      Calls triggerGoogleSignIn() which activates the One Tap prompt.
-    -->
+    <!-- Single custom-styled button that matches the dark UI -->
     <button class="btn-google" onclick="triggerGoogleSignIn()" aria-label="Sign in with Google">
-      <!-- Google "G" SVG logo -->
       <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
